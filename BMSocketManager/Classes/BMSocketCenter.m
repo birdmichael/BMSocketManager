@@ -62,18 +62,18 @@
     switch ([BMSocketCenter sharedCenter].socketStatus) {
         case BMSocketStatusConnected:
         case BMSocketStatusReceived:{
-            NSLog(@"发送中。。。");
+            NSLog(@"BMSocketCenter 发送中。。。");
             [self.webSocket send:data];
             break;
         }
         case BMSocketStatusFailed:
-            NSLog(@"发送失败");
+            NSLog(@"BMSocketCenter 发送失败");
             break;
         case BMSocketStatusClosedByServer:
-            NSLog(@"已经关闭");
+            NSLog(@"BMSocketCenter 已经关闭");
             break;
         case BMSocketStatusClosedByUser:
-            NSLog(@"已经关闭");
+            NSLog(@"BMSocketCenter 已经关闭");
             break;
     }
     
@@ -129,7 +129,6 @@
 }
 #pragma mark -- SRWebSocketDelegate
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket{
-    NSLog(@"Websocket Connected");
     
     [BMSocketCenter sharedCenter].connectBlock ? [BMSocketCenter sharedCenter].connectBlock() : nil;
     [BMSocketCenter sharedCenter].socketStatus = BMSocketStatusConnected;
@@ -138,7 +137,6 @@
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error{
-    NSLog(@":( Websocket Failed With Error %@", error);
     [BMSocketCenter sharedCenter].socketStatus = BMSocketStatusFailed;
     [BMSocketCenter sharedCenter].failureBlock ? [BMSocketCenter sharedCenter].failureBlock(error) : nil;
     // 重连
@@ -146,13 +144,11 @@
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message{
-    NSLog(@":( Websocket Receive With message %@", message);
     [BMSocketCenter sharedCenter].socketStatus = BMSocketStatusReceived;
     [BMSocketCenter sharedCenter].receiveBlock ? [BMSocketCenter sharedCenter].receiveBlock(message,BMSocketReceiveTypeForMessage) : nil;
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean{
-    NSLog(@"Closed Reason:%@  code = %zd",reason,code);
     if (reason) {
         [BMSocketCenter sharedCenter].socketStatus = BMSocketStatusClosedByServer;
         // 重连
